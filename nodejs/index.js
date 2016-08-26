@@ -7,6 +7,8 @@ const server = http.createServer((request, response) => {
   response.end();
 });
 
+let players = [];
+
 server.listen(3000, () => {
   console.log((new Date()) + ' Server is listening on port 3000');
 });
@@ -22,26 +24,49 @@ const wsServer = new WebSocketServer({
 });
 
 wsServer.on('request', request => {
-  const connection = request.accept();
+  if (players.length === 4) return request.reject();
+
   const id = uuid.v1();
 
+  let coords = { x: 1, y: 1 };
+
+  switch (players.length) {
+  case 0:
+    break;
+  case 1:
+    coords = { x: 11, y: 1 };
+    break;
+  case 1:
+    coords = { x: 11, y: 1 };
+    break;
+  case 1:
+    coords = { x: 11, y: 1 };
+    break;
+  default:
+    break;
+  }
+
+  players = players.concat({ id, coords });
+
+  const connection = request.accept();
+
   const message = JSON.stringify({
-    id
+    players
   });
 
-  connection.sendUTF(message);
+  wsServer.connections.forEach(connection => connection.sendUTF(message));
 
   connection.on('message', message => {
-    connection.sendUTF(JSON.stringify({
-      id,
-      message: message.utf8Data
-    }));
+
   });
 
-  connection.on('close', (reasonCode, description) => {
-    console.log(reasonCode, description);
-    console.log(
-      (new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.'
-    );
+  connection.on('close', () => {
+    players = players.filter(player => player.id !== id);
+
+    const message = JSON.stringify({
+      players
+    });
+
+    wsServer.connections.forEach(connection => connection.sendUTF(message));
   });
 });
