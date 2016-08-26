@@ -5,13 +5,12 @@ import Html exposing (..)
 import Html.App as Html
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (class, style)
-
 import Playground
 
 
 -- import Html.Events exposing (..)
+-- import List exposing (..)
 
-import List exposing (..)
 import WebSocket
 
 
@@ -57,7 +56,7 @@ initialModel =
         , { id = "4", coords = { x = 30, y = 30 } }
         ]
     , playgroundModel =
-        { tiles = [[1,2,3],[1,2,3],[1,2,3]]}
+        { tiles = [ [ 1, 2, 3 ], [ 1, 2, 3 ], [ 1, 2, 3 ] ] }
     }
 
 
@@ -76,7 +75,6 @@ type Msg
     = Message String
     | Send String
     | KeyMsg Keyboard.KeyCode
-    | PlaygroundMsg Playground.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -132,6 +130,19 @@ playerView model =
 view : Model -> Html Msg
 view model =
     div []
-        [
-            PlaygroundMsg (Playground.render {tiles = [[1,2,3],[1,2,3],[1,2,3]]})
+        [ Playground.render
+            { tiles =
+                [ [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
+                , [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ]
+                , [ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 ]
+                , [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ]
+                , [ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 ]
+                , [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ]
+                , [ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 ]
+                , [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ]
+                , [ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 ]
+                , [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ]
+                , [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
+                ]
+            }
         ]

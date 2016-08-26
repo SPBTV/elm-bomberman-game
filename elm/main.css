@@ -4,3 +4,21 @@
   height: 20px;
   background: red;
 }
+
+.row {
+  height: 20px;
+}
+
+.cell {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+}
+
+.cell_1 {
+  background: gray;
+}
+
+.cell_0 {
+  background: green;
+}
