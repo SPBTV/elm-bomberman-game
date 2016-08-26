@@ -3,15 +3,10 @@ module Main exposing (..)
 import Html exposing (..)
 import Html.App as Html
 import Html.Attributes exposing (class, style)
-
-
--- import Html.Events exposing (..)
-
+import Html.Events exposing (..)
 import List exposing (..)
 import WebSocket
-
-
--- import Json.Decode exposing (Decoder, int, string, object2, (:=))
+import Json.Decode as Json
 
 
 main : Program Never
@@ -70,7 +65,8 @@ init =
 
 type Msg
     = Message String
-    | Send
+    | Send String
+    | Move { x : Int, y : Int }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -79,9 +75,14 @@ update msg model =
         Message str ->
             ( model, Cmd.none )
 
-        Send ->
+        Send str ->
             ( model
-            , WebSocket.send "ws://127.0.0.1:3000" "ping"
+            , WebSocket.send "ws://127.0.0.1:3000" str
+            )
+
+        Move { x, y } ->
+            ( model
+            , WebSocket.send "ws://127.0.0.1:3000" (toString x ++ toString y)
             )
 
 
@@ -107,7 +108,12 @@ playerView model =
                 , ( "left", (toString (model.coords.y * 10) ++ "px") )
                 ]
     in
-        div [ class "player", playerStyle ] [ text (toString model.id) ]
+        div
+            [ class "player"
+            , playerStyle
+            , onClick (Send (toString model.id))
+            ]
+            [ text (toString model.id) ]
 
 
 view : Model -> Html Msg
