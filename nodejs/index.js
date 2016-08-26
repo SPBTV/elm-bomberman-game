@@ -50,7 +50,9 @@ wsServer.on('request', request => {
     break;
   }
 
-  players = players.concat({ id, coords });
+  const { x, y } = coords;
+
+  players = players.concat({ id,x ,y });
 
   const connection = request.accept();
 
@@ -60,8 +62,62 @@ wsServer.on('request', request => {
 
   wsServer.connections.forEach(connection => connection.sendUTF(message));
 
-  connection.on('message', message => {
-    console.log(message);
+  connection.on('message', ({utf8Data: keyCode}) => {
+    // this is not real javascript keycodes it's returns from elm onkeydown handler
+    // written by K. Vasilev
+    switch (keyCode) {
+      // left 'a'
+      case '97':
+        players = players.map(player => {
+          if (player.id !== id || player.x === 1) return player;
+
+          player.x = player.x - 1;
+          return player;
+        });
+        break;
+      // top 'w'
+      case '119':
+        players = players.map(player => {
+          if (player.id !== id || player.y === 1) return player;
+
+          player.y = player.y - 1;
+          return player;
+        });
+        break;
+      // right 'd'
+      case '100':
+        console.log(id);
+        players = players.map(player => {
+          console.log(player.id, player.x);
+          if (player.id !== id || player.x === 14) return player;
+
+          player.x = player.x + 1;
+          return player;
+        });
+        break;
+      // down 's'
+      case '115':
+        players = players.map(player => {
+          if (player.id !== id || player.y === 10) return player;
+
+          player.y = player.y + 1;
+          return player;
+        });
+        break;
+      // bomb! 'space'
+      case '32':
+        break;
+      default:
+        break;
+    }
+
+    console.log(players);
+
+    const message = JSON.stringify({
+      players
+    });
+
+    wsServer.connections.forEach(connection => connection.sendUTF(message));
   });
 
   connection.on('close', () => {

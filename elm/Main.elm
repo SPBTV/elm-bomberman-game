@@ -6,11 +6,7 @@ import Html.App as Html
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (class, style)
 import Playground
-
-
--- import Html.Events exposing (..)
--- import List exposing (..)
-
+import Json.Decode exposing (..)
 import WebSocket
 
 
@@ -30,33 +26,29 @@ main =
 
 type alias Player =
     { id : String
-    , coords : { x : Int, y : Int }
+    , x : Int
+    , y : Int
     }
 
 
 initialPlayer : Player
 initialPlayer =
     { id = ""
-    , coords = { x = 0, y = 0 }
+    , x = 0
+    , y = 0
     }
 
 
 type alias Model =
     { players : List Player
-    , playgroundModel : Playground.Model
     }
 
 
 initialModel : Model
 initialModel =
     { players =
-        [ { id = "1", coords = { x = 0, y = 0 } }
-        , { id = "2", coords = { x = 10, y = 10 } }
-        , { id = "3", coords = { x = 20, y = 20 } }
-        , { id = "4", coords = { x = 30, y = 30 } }
+        [ { id = "1", x = 1, y = 1 }
         ]
-    , playgroundModel =
-        { tiles = [ [ 1, 2, 3 ], [ 1, 2, 3 ], [ 1, 2, 3 ] ] }
     }
 
 
@@ -81,7 +73,16 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Message str ->
-            ( model, Cmd.none )
+            let
+                result =
+                    decodeString decodeMessage str
+            in
+                case result of
+                    Ok players ->
+                        ( { model | players = players }, Cmd.none )
+
+                    Err _ ->
+                        ( model, Cmd.none )
 
         Send str ->
             ( model
@@ -96,6 +97,18 @@ update msg model =
 
 
 -- SUBSCRIPTIONS
+
+
+decodeMessage : Decoder (List Player)
+decodeMessage =
+    at [ "players" ]
+        (list
+            (object3 Player
+                ("id" := string)
+                ("x" := int)
+                ("y" := int)
+            )
+        )
 
 
 subscriptions : Model -> Sub Msg
@@ -115,8 +128,8 @@ playerView model =
     let
         playerStyle =
             style
-                [ ( "top", (toString (model.coords.x * 10) ++ "px") )
-                , ( "left", (toString (model.coords.y * 10) ++ "px") )
+                [ ( "top", (toString (model.x * 20) ++ "px") )
+                , ( "left", (toString (model.y * 20) ++ "px") )
                 ]
     in
         div
@@ -124,25 +137,31 @@ playerView model =
             , playerStyle
             , onClick (Send (toString model.id))
             ]
-            [ text (toString model.id) ]
+            []
 
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ Playground.render
-            { tiles =
-                [ [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
-                , [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ]
-                , [ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 ]
-                , [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ]
-                , [ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 ]
-                , [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ]
-                , [ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 ]
-                , [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ]
-                , [ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 ]
-                , [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ]
-                , [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
-                ]
-            }
+    div [ class "map" ]
+        [ (div []
+            [ Playground.render
+                { tiles =
+                    [ [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
+                    , [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ]
+                    , [ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 ]
+                    , [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ]
+                    , [ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 ]
+                    , [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ]
+                    , [ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 ]
+                    , [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ]
+                    , [ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 ]
+                    , [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ]
+                    , [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
+                    ]
+                }
+            ]
+          )
+        , (div []
+            (List.map playerView model.players)
+          )
         ]

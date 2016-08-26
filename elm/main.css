@@ -1,3 +1,7 @@
+.map {
+  position: relative;
+}
+
 .player {
   position: absolute;
   width: 20px;
