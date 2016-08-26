@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Html.App as Html
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, style)
 
 
 -- import Html.Events exposing (..)
@@ -100,7 +100,14 @@ subscriptions model =
 
 playerView : Player -> Html Msg
 playerView model =
-    div [ class "player" ] [ text (toString model.id) ]
+    let
+        playerStyle =
+            style
+                [ ( "top", (toString (model.coords.x * 10) ++ "px") )
+                , ( "left", (toString (model.coords.y * 10) ++ "px") )
+                ]
+    in
+        div [ class "player", playerStyle ] [ text (toString model.id) ]
 
 
 view : Model -> Html Msg
