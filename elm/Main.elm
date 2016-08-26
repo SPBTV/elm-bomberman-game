@@ -48,10 +48,12 @@ type alias Model =
 initialModel : Model
 initialModel =
     { players =
-      [ { id = "1", coords = { 0, 0 } }
-      , { id = "2", coords = { 10, 10 } }
-      , { id = "3", coords = { 20, 20 } }
-      , { id = "4", coords = { 30, 30 } } ]}
+        [ { id = "1", coords = { x = 0, y = 0 } }
+        , { id = "2", coords = { x = 10, y = 10 } }
+        , { id = "3", coords = { x = 20, y = 20 } }
+        , { id = "4", coords = { x = 30, y = 30 } }
+        ]
+    }
 
 
 init : ( Model, Cmd Msg )
