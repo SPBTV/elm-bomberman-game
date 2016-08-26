@@ -2,13 +2,15 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Html.App as Html
-import Html.Events exposing (..)
+
+
+-- import Html.Events exposing (..)
+
+import List exposing (..)
 import WebSocket
 
 
 -- import Json.Decode exposing (Decoder, int, string, object2, (:=))
-
-import Model exposing (Model, Player, initialPlayer)
 
 
 main : Program Never
@@ -25,11 +27,32 @@ main =
 -- MODEL
 
 
+type alias Player =
+    { id : String
+    , coords : { x : Int, y : Int }
+    }
+
+
+initialPlayer : Player
+initialPlayer =
+    { id = ""
+    , coords = { x = 0, y = 0 }
+    }
+
+
+type alias Model =
+    { players : List Player
+    }
+
+
+initialModel : Model
+initialModel =
+    {}
+
+
 init : ( Model, Cmd Msg )
 init =
-    ( { current = initialPlayer
-      , players = []
-      }
+    ( initialModel
     , Cmd.none
     )
 
@@ -39,11 +62,10 @@ init =
 
 
 type Msg
-    = Message String
-    | Send
+    = Message Player.Msg
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model.Model -> ( Model.Model, Cmd Msg )
 update msg model =
     case msg of
         Message str ->
@@ -51,7 +73,7 @@ update msg model =
 
         Send ->
             ( model
-            , WebSocket.send "ws://127.0.0.1:3000" model.current.id
+            , WebSocket.send "ws://127.0.0.1:3000" "ping"
             )
 
 
@@ -59,7 +81,7 @@ update msg model =
 -- SUBSCRIPTIONS
 
 
-subscriptions : Model -> Sub Msg
+subscriptions : Model.Model -> Sub Msg
 subscriptions model =
     WebSocket.listen "ws://127.0.0.1:3000" Message
 
@@ -68,10 +90,12 @@ subscriptions model =
 -- VIEW
 
 
-view : Model -> Html Msg
+playerView : PlayerModel -> Html Msg
+playerView model =
+    div [ class "player" ] [ text (toString model.id) ]
+
+
+view : Model.Model -> Html Msg
 view model =
     div []
-        [ div [] []
-        , span [] [ text model.current.id ]
-        , button [ onClick Send ] [ text "Send" ]
-        ]
+        (List.map Player.view model.players)
