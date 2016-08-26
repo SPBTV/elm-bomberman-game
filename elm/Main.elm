@@ -1,8 +1,12 @@
 module Main exposing (..)
 
+import Keyboard
 import Html exposing (..)
 import Html.App as Html
-import Html.Attributes exposing (class, style)
+import Html.Events exposing (onClick)
+import Html.Attributes exposing (
+  class,
+  style)
 
 
 -- import Html.Events exposing (..)
@@ -71,6 +75,7 @@ init =
 type Msg
     = Message String
     | Send
+    | KeyMsg Keyboard.KeyCode
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -83,6 +88,11 @@ update msg model =
             ( model
             , WebSocket.send "ws://127.0.0.1:3000" "ping"
             )
+        KeyMsg code ->
+          (
+            model
+            , WebSocket.send "ws://127.0.0.1:3000" (toString code)
+          )
 
 
 
@@ -91,8 +101,10 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    WebSocket.listen "ws://127.0.0.1:3000" Message
-
+    Sub.batch
+      [ WebSocket.listen "ws://127.0.0.1:3000" Message
+      , Keyboard.presses KeyMsg
+      ]
 
 
 -- VIEW
@@ -107,7 +119,11 @@ playerView model =
                 , ( "left", (toString (model.coords.y * 10) ++ "px") )
                 ]
     in
-        div [ class "player", playerStyle ] [ text (toString model.id) ]
+        div [
+          class "player",
+          playerStyle,
+          onClick Send
+        ] [ text (toString model.id) ]
 
 
 view : Model -> Html Msg

@@ -61,7 +61,7 @@ wsServer.on('request', request => {
   wsServer.connections.forEach(connection => connection.sendUTF(message));
 
   connection.on('message', message => {
-
+    console.log(message);
   });
 
   connection.on('close', () => {
