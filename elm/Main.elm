@@ -2,6 +2,7 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Html.App as Html
+import Html.Attributes exposing (class)
 
 
 -- import Html.Events exposing (..)
@@ -68,10 +69,11 @@ init =
 
 
 type Msg
-    = Message Player.Msg
+    = Message String
+    | Send
 
 
-update : Msg -> Model.Model -> ( Model.Model, Cmd Msg )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Message str ->
@@ -87,7 +89,7 @@ update msg model =
 -- SUBSCRIPTIONS
 
 
-subscriptions : Model.Model -> Sub Msg
+subscriptions : Model -> Sub Msg
 subscriptions model =
     WebSocket.listen "ws://127.0.0.1:3000" Message
 
@@ -96,12 +98,12 @@ subscriptions model =
 -- VIEW
 
 
-playerView : PlayerModel -> Html Msg
+playerView : Player -> Html Msg
 playerView model =
     div [ class "player" ] [ text (toString model.id) ]
 
 
-view : Model.Model -> Html Msg
+view : Model -> Html Msg
 view model =
     div []
-        (List.map Player.view model.players)
+        (List.map playerView model.players)
