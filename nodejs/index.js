@@ -1,6 +1,7 @@
 const uuid = require('node-uuid');
 const WebSocketServer = require('websocket').server;
 const http = require('http');
+const generateMap = require('./generate-map');
 
 const server = http.createServer((request, response) => {
   response.writeHead(404);
@@ -10,6 +11,9 @@ const server = http.createServer((request, response) => {
 server.listen(3000, () => {
   console.log((new Date()) + ' Server is listening on port 3000');
 });
+
+
+const map = generateMap();
 
 const wsServer = new WebSocketServer({
     httpServer: server,
