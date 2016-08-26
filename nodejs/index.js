@@ -27,6 +27,12 @@ const wsServer = new WebSocketServer({
     autoAcceptConnections: false
 });
 
+const isWall = (x, y) => {
+  if (x % 2 === 0 && y % 2 === 0) return true;
+
+  return false;
+};
+
 wsServer.on('request', request => {
   if (players.length === 4) return request.reject();
 
@@ -69,7 +75,11 @@ wsServer.on('request', request => {
       // left 'a'
       case '97':
         players = players.map(player => {
-          if (player.id !== id || player.x === 1) return player;
+          if (
+            player.id !== id ||
+            player.x === 1 ||
+            isWall(player.x - 1, player.y)
+          ) return player;
 
           player.x = player.x - 1;
           return player;
@@ -78,7 +88,11 @@ wsServer.on('request', request => {
       // top 'w'
       case '119':
         players = players.map(player => {
-          if (player.id !== id || player.y === 1) return player;
+          if (
+            player.id !== id ||
+            player.y === 1 ||
+            isWall(player.x, player.y - 1)
+          ) return player;
 
           player.y = player.y - 1;
           return player;
@@ -86,10 +100,12 @@ wsServer.on('request', request => {
         break;
       // right 'd'
       case '100':
-        console.log(id);
         players = players.map(player => {
-          console.log(player.id, player.x);
-          if (player.id !== id || player.x === 14) return player;
+          if (
+            player.id !== id ||
+            player.x === 13 ||
+            isWall(player.x + 1, player.y)
+          ) return player;
 
           player.x = player.x + 1;
           return player;
@@ -98,7 +114,11 @@ wsServer.on('request', request => {
       // down 's'
       case '115':
         players = players.map(player => {
-          if (player.id !== id || player.y === 10) return player;
+          if (
+            player.id !== id ||
+            player.y === 9  ||
+            isWall(player.x, player.y + 1)
+          ) return player;
 
           player.y = player.y + 1;
           return player;
@@ -110,8 +130,6 @@ wsServer.on('request', request => {
       default:
         break;
     }
-
-    console.log(players);
 
     const message = JSON.stringify({
       players

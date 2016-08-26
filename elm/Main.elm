@@ -86,12 +86,12 @@ update msg model =
 
         Send str ->
             ( model
-            , WebSocket.send "ws://127.0.0.1:3000" str
+            , WebSocket.send "ws://192.168.32.104:3000" str
             )
 
         KeyMsg code ->
             ( model
-            , WebSocket.send "ws://127.0.0.1:3000" (toString code)
+            , WebSocket.send "ws://192.168.32.104:3000" (toString code)
             )
 
 
@@ -114,7 +114,7 @@ decodeMessage =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ WebSocket.listen "ws://127.0.0.1:3000" Message
+        [ WebSocket.listen "ws://192.168.32.104:3000" Message
         , Keyboard.presses KeyMsg
         ]
 
@@ -128,8 +128,8 @@ playerView model =
     let
         playerStyle =
             style
-                [ ( "top", (toString (model.x * 20) ++ "px") )
-                , ( "left", (toString (model.y * 20) ++ "px") )
+                [ ( "top", (toString (model.y * 20) ++ "px") )
+                , ( "left", (toString (model.x * 20) ++ "px") )
                 ]
     in
         div
