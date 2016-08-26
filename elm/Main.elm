@@ -1,12 +1,16 @@
 module Main exposing (..)
 
+import Keyboard
 import Html exposing (..)
 import Html.App as Html
+import Html.Events exposing (onClick)
 import Html.Attributes exposing (class, style)
-import Html.Events exposing (..)
+
+
+-- import Html.Events exposing (..)
+
 import List exposing (..)
 import WebSocket
-import Json.Decode as Json
 
 
 main : Program Never
@@ -66,7 +70,7 @@ init =
 type Msg
     = Message String
     | Send String
-    | Move { x : Int, y : Int }
+    | KeyMsg Keyboard.KeyCode
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -80,9 +84,9 @@ update msg model =
             , WebSocket.send "ws://127.0.0.1:3000" str
             )
 
-        Move { x, y } ->
+        KeyMsg code ->
             ( model
-            , WebSocket.send "ws://127.0.0.1:3000" (toString x ++ toString y)
+            , WebSocket.send "ws://127.0.0.1:3000" (toString code)
             )
 
 
@@ -92,7 +96,10 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    WebSocket.listen "ws://127.0.0.1:3000" Message
+    Sub.batch
+        [ WebSocket.listen "ws://127.0.0.1:3000" Message
+        , Keyboard.presses KeyMsg
+        ]
 
 
 
