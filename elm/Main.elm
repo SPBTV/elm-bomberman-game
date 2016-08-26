@@ -6,6 +6,8 @@ import Html.App as Html
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (class, style)
 
+import Playground
+
 
 -- import Html.Events exposing (..)
 
@@ -42,6 +44,7 @@ initialPlayer =
 
 type alias Model =
     { players : List Player
+    , playgroundModel : Playground.Model
     }
 
 
@@ -53,6 +56,8 @@ initialModel =
         , { id = "3", coords = { x = 20, y = 20 } }
         , { id = "4", coords = { x = 30, y = 30 } }
         ]
+    , playgroundModel =
+        { tiles = [[1,2,3],[1,2,3],[1,2,3]]}
     }
 
 
@@ -71,6 +76,7 @@ type Msg
     = Message String
     | Send String
     | KeyMsg Keyboard.KeyCode
+    | PlaygroundMsg Playground.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -126,4 +132,6 @@ playerView model =
 view : Model -> Html Msg
 view model =
     div []
-        (List.map playerView model.players)
+        [
+            PlaygroundMsg (Playground.render {tiles = [[1,2,3],[1,2,3],[1,2,3]]})
+        ]
