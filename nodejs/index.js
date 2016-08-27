@@ -42,16 +42,15 @@ wsServer.on('request', request => {
   case 0:
     break;
   case 1:
-    coords = { x: 11, y: 1 };
+    coords = { x: 13, y: 1 };
     break;
-  case 1:
-    coords = { x: 11, y: 1 };
+  case 2:
+    coords = { x: 1, y: 9};
     break;
-  case 1:
-    coords = { x: 11, y: 1 };
+  case 3:
+    coords = { x: 13, y: 9 };
     break;
   default:
-    break;
   }
 
   const { x, y } = coords;
