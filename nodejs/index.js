@@ -28,9 +28,7 @@ const wsServer = new WebSocketServer({
 });
 
 const isWall = (x, y) => {
-  if (x % 2 === 0 && y % 2 === 0) return true;
-
-  return false;
+  return (x % 2 === 0 && y % 2 === 0);
 };
 
 wsServer.on('request', request => {
